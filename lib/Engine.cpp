@@ -18,6 +18,7 @@
 #include "restpp/Logger.hpp"
 #include "restpp/Engine.hpp"
 #include "restpp/Exception.hpp"
+#include "restpp/RequestHandler.hpp"
 
 using namespace restpp;
 
@@ -69,7 +70,7 @@ boost::beast::string_view mime_type(boost::beast::string_view path) {
     return result;
 }
 
-class EngineSync : public Engine {
+class EngineSync : public Engine,public RequestHandler {
 public:
     void Run(const std::string &args) override;
 
@@ -110,7 +111,7 @@ void EngineSync::Run(const std::string &args) {
     LOG(INFO) << "Server on: " << address << ":" << port;
 
     // The io_context is required for all I/O
-    boost::asio::io_context ioc{1};
+    boost::asio::io_context ioc{4};
 
     // The acceptor receives incoming connections
     boost::asio::ip::tcp::acceptor acceptor{ioc, {address, port}};
