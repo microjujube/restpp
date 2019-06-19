@@ -23,20 +23,6 @@
 
 using namespace restpp;
 
-std::string
-path_cat(
-        boost::beast::string_view base,
-        boost::beast::string_view path) {
-    if (base.empty())
-        return path.to_string();
-    std::string result = base.to_string();
-
-    char constexpr path_separator = '/';
-    if (result.back() == path_separator)
-        result.resize(result.size() - 1);
-    result.append(path.data(), path.size());
-    return result;
-}
 
 class EngineImpl : public Engine, public RequestHandler {
 public:
