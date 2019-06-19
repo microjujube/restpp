@@ -112,6 +112,16 @@ namespace restpp {
             // std::string path = path_cat(doc_root, req.target());
             // if (req.target().back() == '/')
             // path.append("index.html");
+            LOG(INFO) << req.method() << " " << req.target();
+            if (!_routes.count(req.method())) {
+                return send(bad_request("Unknown HTTP-method"));
+            }
+
+            if (!_routes[req.method()].count(Engine::path_type(req.target()))) {
+                return send(bad_request("Not Found"));
+            }
+
+
 
             // Attempt to open the file
             boost::beast::error_code ec;
@@ -154,10 +164,11 @@ namespace restpp {
         }
 
     protected:
-        std::unordered_map<Engine::path_type, Engine::Handler> _put_routes;
-        std::unordered_map<Engine::path_type, Engine::Handler> _delete_routes;
-        std::unordered_map<Engine::path_type, Engine::Handler> _post_routes;
-        std::unordered_map<Engine::path_type, Engine::Handler> _get_routes;
+        std::unordered_map<boost::beast::http::verb, std::unordered_map<Engine::path_type, Engine::Handler> > _routes;
+//        std::unordered_map<Engine::path_type, Engine::Handler> _put_routes;
+//        std::unordered_map<Engine::path_type, Engine::Handler> _delete_routes;
+//        std::unordered_map<Engine::path_type, Engine::Handler> _post_routes;
+//        std::unordered_map<Engine::path_type, Engine::Handler> _get_routes;
 
     };
 }
