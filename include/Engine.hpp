@@ -12,6 +12,8 @@ namespace resetpp {
     public:
         typedef std::shared_ptr<Engine> sptr;
 
+        virtual void Run() = 0;
+
         static sptr make();
     };
 

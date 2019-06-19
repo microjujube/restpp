@@ -10,9 +10,17 @@ using namespace resetpp;
 
 
 class EngineSync : public Engine {
+public:
+    void Run() override;
+
+public:
 
 };
 
 std::shared_ptr <Engine> resetpp::Engine::make() {
     return std::make_shared<EngineSync>();
+}
+
+void EngineSync::Run() {
+
 }
