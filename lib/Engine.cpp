@@ -12,6 +12,7 @@
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/config.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -37,19 +38,20 @@ path_cat(
     return result;
 }
 
-class EngineSync : public Engine, public RequestHandler {
+class EngineImpl : public Engine, public RequestHandler {
+public:
+    void GET(const path_type &path, Handler handler) override {
+        _get_routes.insert(std::pair{path, handler});
+    }
+};
+
+class EngineSync : public EngineImpl {
 public:
     void Run(const std::string &args) override;
 
-    void GET(const path_type &path, Handler handler) override;
-
 private:
-    void do_session(boost::asio::ip::tcp::socket &socket, std::string const &doc_root);
+    void do_session(boost::asio::ip::tcp::socket &socket);
 };
-
-std::shared_ptr<Engine> restpp::Engine::make() {
-    return std::make_shared<EngineSync>();
-}
 
 void EngineSync::Run(const std::string &args) {
     //TODO Parse arguments
@@ -65,8 +67,7 @@ void EngineSync::Run(const std::string &args) {
     }
 
     auto const address = boost::asio::ip::make_address(args_v[0]);
-    auto const port = (unsigned short) std::atoi(args_v[1].c_str());
-    std::string const doc_root = "./static";
+    auto const port = boost::lexical_cast<unsigned short>(args_v[1]);
 
     LOG(INFO) << "Server on: " << address << ":" << port;
 
@@ -85,8 +86,7 @@ void EngineSync::Run(const std::string &args) {
         // Launch the session, transferring ownership of the socket
         std::thread{std::bind(
                 &EngineSync::do_session, this,
-                std::move(socket),
-                doc_root)}.detach();
+                std::move(socket))}.detach();
     }
 }
 
@@ -127,7 +127,7 @@ fail(boost::system::error_code ec, char const *what) {
     std::cerr << what << ": " << ec.message() << "\n";
 }
 
-void EngineSync::do_session(boost::asio::ip::tcp::socket &socket, std::string const &doc_root) {
+void EngineSync::do_session(boost::asio::ip::tcp::socket &socket) {
     bool close = false;
     boost::system::error_code ec;
 
@@ -147,7 +147,7 @@ void EngineSync::do_session(boost::asio::ip::tcp::socket &socket, std::string co
             return fail(ec, "read");
 
         // Send the response
-        handle_request(doc_root, std::move(req), lambda);
+        handle_request(std::move(req), lambda);
         if (ec)
             return fail(ec, "write");
         if (close) {
@@ -163,7 +163,7 @@ void EngineSync::do_session(boost::asio::ip::tcp::socket &socket, std::string co
     // At this point the connection is closed gracefully
 }
 
-void EngineSync::GET(const Engine::path_type &path, Engine::Handler handler) {
 
+std::shared_ptr<Engine> restpp::Engine::make() {
+    return std::make_shared<EngineSync>();
 }
-

@@ -13,6 +13,9 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/config.hpp>
 
+#include <unordered_map>
+#include "restpp/Engine.hpp"
+
 namespace restpp {
     // Return a reasonable mime type based on the extension of a file.
     boost::beast::string_view mime_type(boost::beast::string_view path) {
@@ -52,8 +55,7 @@ namespace restpp {
         std::shared_ptr<RequestHandler> sptr;
 
         template<class Body, class Allocator, class Send>
-        void handle_request(boost::beast::string_view doc_root,
-                            boost::beast::http::request<Body, boost::beast::http::basic_fields<Allocator>> &&req,
+        void handle_request(boost::beast::http::request<Body, boost::beast::http::basic_fields<Allocator>> &&req,
                             Send &&send) {
             // Returns a bad request response
             auto const bad_request =
@@ -150,6 +152,13 @@ namespace restpp {
 
             return send(std::move(res));
         }
+
+    protected:
+        std::unordered_map<Engine::path_type, Engine::Handler> _put_routes;
+        std::unordered_map<Engine::path_type, Engine::Handler> _delete_routes;
+        std::unordered_map<Engine::path_type, Engine::Handler> _post_routes;
+        std::unordered_map<Engine::path_type, Engine::Handler> _get_routes;
+
     };
 }
 
