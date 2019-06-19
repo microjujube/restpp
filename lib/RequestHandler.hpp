@@ -121,7 +121,10 @@ namespace restpp {
                 return send(bad_request("Not Found"));
             }
 
+            Request request{};
+            Response response{};
 
+            _routes[req.method()][Engine::path_type(req.target())](request, response);
 
             // Attempt to open the file
             boost::beast::error_code ec;
