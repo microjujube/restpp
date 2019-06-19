@@ -23,13 +23,14 @@ SET(BOOST_REQUIRED_COMPONENTS
         unit_test_framework
         )
 
-find_package(Boost 1.49 COMPONENTS ${BOOST_REQUIRED_COMPONENTS} REQUIRED)
+find_package(Boost COMPONENTS ${BOOST_REQUIRED_COMPONENTS} REQUIRED)
 message(STATUS "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(STATUS "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
 message(STATUS "** Boost Libraries: ${Boost_LIBRARIES}")
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
+find_package(glog CONFIG REQUIRED)
 
 add_subdirectory(include)
 add_subdirectory(lib)

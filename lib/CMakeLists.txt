@@ -3,5 +3,5 @@ add_library(restpp SHARED restpp.cc)
 target_link_libraries(restpp
         Engine
         ${Boost_LIBRARIES}
-        glog
+        glog::glog
         )

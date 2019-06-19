@@ -7,12 +7,12 @@
 
 #include <memory>
 
-namespace resetpp {
+namespace restpp {
     class Engine {
     public:
         typedef std::shared_ptr<Engine> sptr;
 
-        virtual void Run() = 0;
+        virtual void Run(const std::string &args) = 0;
 
         static sptr make();
     };

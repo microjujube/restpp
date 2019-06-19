@@ -1,41 +1,55 @@
 //
 // Created by linwei on 2019-06-18.
 //
-
 #include <iostream>
-#include <boost/beast/core.hpp>
-#include <boost/beast/http.hpp>
-#include <boost/beast/version.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/config.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <thread>
 
-#include "resetpp/Logger.hpp"
-#include "resetpp/Engine.hpp"
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/version.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/config.hpp>
+#include <boost/tokenizer.hpp>
 
-using namespace resetpp;
+#include "restpp/Logger.hpp"
+#include "restpp/Engine.hpp"
+#include "restpp/Exception.hpp"
+
+using namespace restpp;
 
 
 class EngineSync : public Engine {
 public:
-    void Run() override;
+    void Run(const std::string &args) override;
 
 private:
     void do_session(boost::asio::ip::tcp::socket &socket, std::string const &doc_root);
 
 };
 
-std::shared_ptr<Engine> resetpp::Engine::make() {
+std::shared_ptr<Engine> restpp::Engine::make() {
     return std::make_shared<EngineSync>();
 }
 
-void EngineSync::Run() {
-    auto const address = boost::asio::ip::make_address("0.0.0.0");
-    auto const port = 8080;
+void EngineSync::Run(const std::string &args) {
+    //TODO Parse arguments
+    boost::char_separator<char> sep(":");
+    boost::tokenizer tokens(args, sep);
+    auto iter = tokens.begin();
+    std::vector<std::string> args_v(2);
+    for (int i = 0; i < 2; ++i) {
+        if (iter == tokens.end())
+            throw Exception(Exception::ERR_DEFAULT, std::string(""));
+        args_v[i] = *iter;
+        iter++;
+    }
+
+    auto const address = boost::asio::ip::make_address(args_v[0]);
+    auto const port = (unsigned short) std::atoi(args_v[1].c_str());
     std::string const doc_root = "./static";
 
     LOG(INFO) << "Server on: " << address << ":" << port;
