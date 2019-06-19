@@ -41,6 +41,8 @@ class EngineSync : public Engine, public RequestHandler {
 public:
     void Run(const std::string &args) override;
 
+    void GET(const path_type &path, Handler handler) override;
+
 private:
     void do_session(boost::asio::ip::tcp::socket &socket, std::string const &doc_root);
 };
@@ -159,5 +161,9 @@ void EngineSync::do_session(boost::asio::ip::tcp::socket &socket, std::string co
     socket.shutdown(boost::asio::ip::tcp::socket::shutdown_send, ec);
 
     // At this point the connection is closed gracefully
+}
+
+void EngineSync::GET(const Engine::path_type &path, Engine::Handler handler) {
+
 }
 

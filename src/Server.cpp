@@ -6,7 +6,11 @@
 
 int main(int argc, char *argv[]) {
     auto engine = restpp::Engine::make();
-    engine->Run("0.0.0.0:8080");
 
+    engine->GET("/hello", [](const restpp::Request &req, restpp::Response &resp) {
+
+    });
+
+    engine->Run("0.0.0.0:8080");
     return 0;
 }
