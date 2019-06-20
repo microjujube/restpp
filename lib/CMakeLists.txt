@@ -8,3 +8,7 @@ target_link_libraries(restpp
         ${Boost_LIBRARIES}
         glog::glog
         )
+
+
+install(TARGETS restpp
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
