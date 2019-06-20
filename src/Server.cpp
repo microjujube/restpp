@@ -13,6 +13,10 @@ int main(int argc, char *argv[]) {
         LOG(INFO) << req.target;
         LOG(INFO) << req.params;
         LOG(INFO) << req.body;
+
+        resp.JSON(200, {
+                {"status", "ok"},
+        });
     });
 
     engine->Run("0.0.0.0:8080");

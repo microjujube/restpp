@@ -91,7 +91,9 @@ namespace restpp {
             //get params
             size_t index = req.target().find("?");
             boost::string_view target = req.target().substr(0, index);
-            boost::string_view get_param = req.target().substr(index + 1);
+            boost::string_view get_param = "";
+            if (index != boost::string_view::npos)
+                get_param = req.target().substr(index + 1);
 
 
             DLOG(INFO) << req.method() << " " << target << " " << get_param;

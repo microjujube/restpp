@@ -32,6 +32,8 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 find_package(glog CONFIG REQUIRED)
 
+find_package(nlohmann_json CONFIG REQUIRED)
+
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(src)

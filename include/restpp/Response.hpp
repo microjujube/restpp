@@ -11,12 +11,21 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/config.hpp>
 
+#include <nlohmann/json.hpp>
+
 namespace restpp {
     struct Response {
+        typedef nlohmann::json json;
         uint16_t status;
         std::string content_type = "application/json";
         std::string body = "{}";
         size_t size = 2;
+
+        void JSON(uint64_t status,const json &j) {
+            status = status;
+            body = j.dump();
+            size = body.size();
+        }
     };
 }
 
