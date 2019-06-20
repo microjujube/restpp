@@ -14,8 +14,8 @@
 namespace restpp {
     struct Response {
         uint16_t status;
-        boost::string_view content_type = "application/json";
-        boost::string_view body = "{}";
+        std::string content_type = "application/json";
+        std::string body = "{}";
         size_t size = 2;
     };
 }

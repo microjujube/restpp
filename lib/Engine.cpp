@@ -29,7 +29,17 @@ public:
     void GET(const path_type &path, Handler handler) override {
         _routes[boost::beast::http::verb::get][path] = handler;
     }
+
+    void FILES(const path_type &path, const std::string &dir) override {
+
+    }
+
+private:
+    void HandlerFile(const Request &req, Response &resp) {
+
+    }
 };
+
 
 class EngineSync : public EngineImpl {
 public:
@@ -58,7 +68,7 @@ void EngineSync::Run(const std::string &args) {
     LOG(INFO) << "Server on: " << address << ":" << port;
 
     // The io_context is required for all I/O
-    boost::asio::io_context ioc{1};
+    boost::asio::io_context ioc{4};
 
     // The acceptor receives incoming connections
     boost::asio::ip::tcp::acceptor acceptor{ioc, {address, port}};

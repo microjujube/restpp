@@ -25,6 +25,8 @@ namespace restpp {
 
         virtual void GET(const path_type &path, Handler handler) = 0;
 
+        virtual void FILES(const path_type &path, const std::string &dir) = 0;
+
         static sptr make();
     };
 
