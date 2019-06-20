@@ -107,9 +107,7 @@ namespace restpp {
 
             // Attempt to open the file
             boost::beast::error_code ec;
-            boost::beast::http::string_body::value_type body;
 //    body.open(path.c_str(), boost::beast::file_mode::scan, ec);
-            body = R"({"name":"hello world"})";
 
             // Handle the case where the file doesn't exist
             if (ec == boost::system::errc::no_such_file_or_directory)
@@ -119,27 +117,18 @@ namespace restpp {
             if (ec)
                 return send(server_error(ec.message()));
 
-            // Respond to HEAD request
-            if (req.method() == boost::beast::http::verb::head) {
-                boost::beast::http::response<boost::beast::http::empty_body> res{boost::beast::http::status::ok,
-                                                                                 req.version()};
-                res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
-                res.set(boost::beast::http::field::content_type, mime_type(".json"));
-//        res.content_length(body.size());
-                res.keep_alive(req.keep_alive());
-                return send(std::move(res));
-            }
-
-
             // Respond to GET request
             boost::beast::http::response<boost::beast::http::string_body> res;
             res.version(req.version());
-            res.result(boost::beast::http::status::ok);
             res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
-            res.set(boost::beast::http::field::content_type, mime_type(".json"));
-            res.content_length(body.size());
             res.keep_alive(req.keep_alive());
-            res.body() = body;
+
+            res.body() = std::string(response.body);
+            res.content_length(response.size);
+            res.set(boost::beast::http::field::content_type, response.content_type);
+            res.result(boost::beast::http::status(response.status));
+
+
             res.prepare_payload();
 
             return send(std::move(res));
