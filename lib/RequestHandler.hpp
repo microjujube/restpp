@@ -83,27 +83,34 @@ namespace restpp {
             // std::string path = path_cat(doc_root, req.target());
             // if (req.target().back() == '/')
             // path.append("index.html");
-            if (req.target().find("?") != boost::beast::string_view::npos) {
-                //TODO split path and parameters;
-            }
 
-            DLOG(INFO) << req.method() << " " << req.target();
             if (!_routes.count(req.method())) {
                 return send(bad_request("Unknown HTTP-method"));
             }
 
-            if (!_routes[req.method()].count(Engine::path_type(req.target()))) {
+            //get params
+            size_t index = req.target().find("?");
+            boost::string_view target = req.target().substr(0, index);
+            boost::string_view get_param = req.target().substr(index + 1);
+
+
+            DLOG(INFO) << req.method() << " " << target << " " << get_param;
+
+            if (!_routes[req.method()].count(Engine::path_type(target))) {
                 return send(bad_request("Not Found"));
             }
+
 
             Request request{
                     boost::beast::http::to_string(req.method()),
                     req.target(),
+                    get_param,
+                    req.body()
             };
 
             Response response{};
 
-            _routes[req.method()][Engine::path_type(req.target())](request, response);
+            _routes[req.method()][Engine::path_type(target)](request, response);
 
             // Attempt to open the file
             boost::beast::error_code ec;

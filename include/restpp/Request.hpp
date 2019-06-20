@@ -17,6 +17,8 @@ namespace restpp {
     struct Request {
         boost::string_view method;
         boost::string_view target;
+        boost::string_view params;
+        boost::string_view body;
     };
 }
 
