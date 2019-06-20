@@ -134,7 +134,8 @@ namespace restpp {
             res.content_length(response.size);
             res.set(boost::beast::http::field::content_type, response.content_type);
             res.result(boost::beast::http::status(response.status));
-
+            res.set(boost::beast::http::field::access_control_allow_headers, "*");
+            res.set(boost::beast::http::field::access_control_allow_origin, "*");
 
             res.prepare_payload();
 
