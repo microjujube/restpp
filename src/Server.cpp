@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
     auto engine = restpp::Engine::make();
 
     engine->GET("/hello", [](const restpp::Request &req, restpp::Response &resp) {
-        LOG(INFO) << "/hello";
+        LOG(INFO) << req.method << " " << req.target;
     });
 
     engine->Run("0.0.0.0:8080");

@@ -6,8 +6,7 @@
 #define RESTPP_RESPONSE_HPP
 
 namespace restpp {
-    class Response {
-
+    struct Response {
     };
 }
 

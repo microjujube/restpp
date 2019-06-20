@@ -11,10 +11,12 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/config.hpp>
 
-namespace restpp {
-    class Request {
-    public:
+#include "restpp/Types.hpp"
 
+namespace restpp {
+    struct Request {
+        boost::string_view method;
+        boost::string_view target;
     };
 }
 

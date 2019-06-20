@@ -15,6 +15,7 @@
 
 #include <unordered_map>
 #include "restpp/Engine.hpp"
+#include "restpp/Logger.hpp"
 
 namespace restpp {
     // Return a reasonable mime type based on the extension of a file.
@@ -112,7 +113,11 @@ namespace restpp {
             // std::string path = path_cat(doc_root, req.target());
             // if (req.target().back() == '/')
             // path.append("index.html");
-            LOG(INFO) << req.method() << " " << req.target();
+            if (req.target().find("?") != boost::beast::string_view::npos) {
+                //TODO split path and parameters;
+            }
+
+            DLOG(INFO) << req.method() << " " << req.target();
             if (!_routes.count(req.method())) {
                 return send(bad_request("Unknown HTTP-method"));
             }
@@ -121,7 +126,11 @@ namespace restpp {
                 return send(bad_request("Not Found"));
             }
 
-            Request request{};
+            Request request{
+                    boost::beast::http::to_string(req.method()),
+                    req.target(),
+            };
+
             Response response{};
 
             _routes[req.method()][Engine::path_type(req.target())](request, response);
