@@ -58,7 +58,7 @@ void EngineSync::Run(const std::string &args) {
     LOG(INFO) << "Server on: " << address << ":" << port;
 
     // The io_context is required for all I/O
-    boost::asio::io_context ioc{4};
+    boost::asio::io_context ioc{1};
 
     // The acceptor receives incoming connections
     boost::asio::ip::tcp::acceptor acceptor{ioc, {address, port}};
