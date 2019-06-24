@@ -115,16 +115,16 @@ namespace restpp {
             _routes[req.method()][Engine::path_type(target)](request, response);
 
             // Attempt to open the file
-            boost::beast::error_code ec;
+//            boost::beast::error_code ec;
 //    body.open(path.c_str(), boost::beast::file_mode::scan, ec);
 
             // Handle the case where the file doesn't exist
-            if (ec == boost::system::errc::no_such_file_or_directory)
-                return send(not_found(req.target()));
+//            if (ec == boost::system::errc::no_such_file_or_directory)
+//                return send(not_found(req.target()));
 
             // Handle an unknown error
-            if (ec)
-                return send(server_error(ec.message()));
+//            if (ec)
+//                return send(server_error(ec.message()));
 
             // Respond to GET request
             boost::beast::http::response<boost::beast::http::string_body> res;
