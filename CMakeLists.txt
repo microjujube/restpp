@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3 -pthread")
 
 #BOOST
 set(Boost_USE_STATIC_LIBS OFF)
@@ -23,7 +23,7 @@ SET(BOOST_REQUIRED_COMPONENTS
         unit_test_framework
         )
 
-find_package(Boost COMPONENTS ${BOOST_REQUIRED_COMPONENTS} REQUIRED)
+find_package(Boost 1.70 COMPONENTS ${BOOST_REQUIRED_COMPONENTS} REQUIRED)
 message(STATUS "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(STATUS "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
 message(STATUS "** Boost Libraries: ${Boost_LIBRARIES}")
