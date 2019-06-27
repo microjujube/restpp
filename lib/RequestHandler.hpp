@@ -103,28 +103,16 @@ namespace restpp {
             }
 
 
-            Request request{
-                    boost::beast::http::to_string(req.method()),
-                    req.target(),
-                    get_param,
-                    req.body()
-            };
+            Request request(
+                    std::move(std::string(boost::beast::http::to_string(req.method()))),
+                    std::string(req.target()),
+                    std::string(get_param),
+                    std::string(req.body())
+            );
 
             Response response{};
 
             _routes[req.method()][Engine::path_type(target)](request, response);
-
-            // Attempt to open the file
-//            boost::beast::error_code ec;
-//    body.open(path.c_str(), boost::beast::file_mode::scan, ec);
-
-            // Handle the case where the file doesn't exist
-//            if (ec == boost::system::errc::no_such_file_or_directory)
-//                return send(not_found(req.target()));
-
-            // Handle an unknown error
-//            if (ec)
-//                return send(server_error(ec.message()));
 
             // Respond to GET request
             boost::beast::http::response<boost::beast::http::string_body> res;

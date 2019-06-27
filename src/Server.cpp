@@ -14,7 +14,11 @@ int main(int argc, char *argv[]) {
         LOG(INFO) << req.getParams();
         LOG(INFO) << req.getBody();
 
+        //parse get parameters
         req.ParseGetParam();
+        for (auto const &key:req.GetParams().keys()) {
+            LOG(INFO) << key << "=" << req.GetParams()[key];
+        }
 
         resp.JSON(200, {
                 {"status", "ok"},
