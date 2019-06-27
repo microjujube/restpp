@@ -27,6 +27,7 @@ using namespace restpp;
 class EngineImpl : public Engine, public RequestHandler {
 public:
     void GET(const path_type &path, Handler handler) override {
+        LOG(INFO) << "Register GET [" << path << "]";
         _routes[boost::beast::http::verb::get][path] = handler;
     }
 

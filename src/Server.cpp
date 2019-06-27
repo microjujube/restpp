@@ -8,11 +8,13 @@
 int main(int argc, char *argv[]) {
     auto engine = restpp::Engine::make();
 
-    engine->GET("/hello", [](const restpp::Request &req, restpp::Response &resp) {
-        LOG(INFO) << req.method;
-        LOG(INFO) << req.target;
-        LOG(INFO) << req.params;
-        LOG(INFO) << req.body;
+    engine->GET("/", [](restpp::Request &req, restpp::Response &resp) {
+        LOG(INFO) << req.getMethod();
+        LOG(INFO) << req.getTarget();
+        LOG(INFO) << req.getParams();
+        LOG(INFO) << req.getBody();
+
+        req.ParseGetParam();
 
         resp.JSON(200, {
                 {"status", "ok"},
