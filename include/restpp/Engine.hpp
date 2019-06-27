@@ -19,7 +19,7 @@ namespace restpp {
 
         typedef std::string path_type;
 
-        typedef std::function<void(const Request &req, Response &resp)> Handler;
+        typedef std::function<void(Request &req, Response &resp)> Handler;
 
         virtual void Run(const std::string &args) = 0;
 
