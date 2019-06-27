@@ -9,10 +9,11 @@
 #include <string>
 
 namespace restpp {
-    class Exception : std::exception {
+    class Exception : public std::exception {
     public:
         enum ERRCODE {
-            ERR_DEFAULT
+            ERR_DEFAULT,
+            ERR_VALUE_ERROR
         };
 
         Exception(ERRCODE code, std::string str)
@@ -28,5 +29,21 @@ namespace restpp {
         std::string _str;
         ERRCODE _code;
     };
+
+    class KeyError : Exception {
+    public:
+        explicit KeyError(std::string str) : Exception(ERR_VALUE_ERROR, str) {
+
+        }
+    };
+
+
+    class ValueError : Exception {
+    public:
+        explicit ValueError(std::string str) : Exception(ERR_VALUE_ERROR, str) {
+
+        }
+    };
+
 }
 #endif //RESTPP_EXCEPTION_HPP
