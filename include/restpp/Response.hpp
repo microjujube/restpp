@@ -10,22 +10,40 @@
 #include <boost/beast/version.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/config.hpp>
+#include <boost/noncopyable.hpp>
 
-#include <nlohmann/json.hpp>
+#include <restpp/Types.hpp>
 
 namespace restpp {
-    struct Response {
-        typedef nlohmann::json json;
+    class Response : public boost::noncopyable {
+    public:
+        void JSON(uint64_t status, const json &j) {
+            _status = status;
+            _body = j.dump();
+            _size = _body.size();
+        }
+
+        const std::string &getBody() const {
+            return _body;
+        }
+
+        uint16_t getStatus() const {
+            return _status;
+        }
+
+        const std::string &getContentType() const {
+            return content_type;
+        }
+
+        size_t getSize() const {
+            return _size;
+        }
+
+    private:
         uint16_t _status;
         std::string content_type = "application/json";
-        std::string body = "{}";
-        size_t size = 2;
-
-        void JSON(uint64_t status,const json &j) {
-            _status = status;
-            body = j.dump();
-            size = body.size();
-        }
+        std::string _body = "{}";
+        size_t _size = 2;
     };
 }
 

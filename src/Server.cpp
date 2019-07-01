@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     });
 
     engine->POST("/", [](restpp::Request &req, restpp::Response &resp) {
-        nlohmann::json json;
+        restpp::json json;
         req.BindJSON(json);
 
         LOG(INFO) << json.dump();

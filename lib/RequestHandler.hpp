@@ -121,10 +121,10 @@ namespace restpp {
             res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
             res.keep_alive(req.keep_alive());
 
-            res.body() = std::string(response.body);
-            res.content_length(response.size);
-            res.set(boost::beast::http::field::content_type, response.content_type);
-            res.result(boost::beast::http::status(response._status));
+            res.body() = response.getBody();
+            res.content_length(response.getSize());
+            res.set(boost::beast::http::field::content_type, response.getContentType());
+            res.result(boost::beast::http::status(response.getStatus()));
             res.set(boost::beast::http::field::access_control_allow_headers, "*");
             res.set(boost::beast::http::field::access_control_allow_origin, "*");
             res.set(boost::beast::http::field::cache_control, "private");
@@ -135,11 +135,9 @@ namespace restpp {
         }
 
     protected:
-        std::unordered_map<boost::beast::http::verb, std::unordered_map<Engine::path_type, Engine::Handler> > _routes;
-//        std::unordered_map<Engine::path_type, Engine::Handler> _put_routes;
-//        std::unordered_map<Engine::path_type, Engine::Handler> _delete_routes;
-//        std::unordered_map<Engine::path_type, Engine::Handler> _post_routes;
-//        std::unordered_map<Engine::path_type, Engine::Handler> _get_routes;
+        std::unordered_map<boost::beast::http::verb,
+                std::unordered_map<Engine::path_type,
+                        Engine::Handler> > _routes;
 
     };
 }

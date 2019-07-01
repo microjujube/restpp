@@ -30,6 +30,6 @@ const Dict<std::string, std::string> &Request::GetParams() const {
     return _get_dict;
 }
 
-void Request::BindJSON(nlohmann::json &json) {
-    json = nlohmann::json::parse(getBody());
+void Request::BindJSON(restpp::json &j) {
+    j = json::parse(getBody());
 }

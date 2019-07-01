@@ -13,7 +13,6 @@
 #include <boost/any.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/regex.hpp>
-#include <nlohmann/json.hpp>
 
 #include <restpp/Types.hpp>
 #include <restpp/Dict.hpp>
@@ -41,7 +40,7 @@ namespace restpp {
 
         void ParseGetParam();
 
-        void BindJSON(nlohmann::json &json);
+        void BindJSON(json &j);
 
         const std::string &getMethod() const {
             return _method;
