@@ -25,6 +25,13 @@ int main(int argc, char *argv[]) {
         });
     });
 
+    engine->POST("/", [](restpp::Request &req, restpp::Response &resp) {
+        LOG(INFO) << req.getBody();
+        resp.JSON(200, {
+                {"status", "ok"},
+        });
+    });
+
     engine->Run("0.0.0.0:8080");
     return 0;
 }

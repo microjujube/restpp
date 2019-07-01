@@ -1,0 +1,19 @@
+GET http://127.0.0.1:8080/?key=value
+
+
+###
+
+
+POST http://127.0.0.1:8080/
+
+{"hello":"world"}
+
+###
+
+GET https://www.baidu.com/
+Accept: */*
+
+<> 2019-07-01T012238.200.html
+
+###
+

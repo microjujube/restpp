@@ -70,7 +70,8 @@ namespace restpp {
 
             // Make sure we can handle the method
             if (req.method() != boost::beast::http::verb::get &&
-                req.method() != boost::beast::http::verb::head)
+                req.method() != boost::beast::http::verb::head &&
+                req.method() != boost::beast::http::verb::post)
                 return send(bad_request("Unknown HTTP-method"));
 
             // Request path must be absolute and not contain "..".
@@ -126,6 +127,7 @@ namespace restpp {
             res.result(boost::beast::http::status(response.status));
             res.set(boost::beast::http::field::access_control_allow_headers, "*");
             res.set(boost::beast::http::field::access_control_allow_origin, "*");
+            res.set(boost::beast::http::field::cache_control, "private");
 
             res.prepare_payload();
 
