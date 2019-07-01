@@ -31,6 +31,12 @@ public:
         _routes[boost::beast::http::verb::get][path] = handler;
     }
 
+    void POST(const path_type &path, Handler handler) override {
+        LOG(INFO) << "Register POST [" << path << "]";
+        _routes[boost::beast::http::verb::post][path] = handler;
+    }
+
+
     void FILES(const path_type &path, const std::string &dir) override {
 
     }
