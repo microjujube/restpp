@@ -26,7 +26,11 @@ int main(int argc, char *argv[]) {
     });
 
     engine->POST("/", [](restpp::Request &req, restpp::Response &resp) {
-        LOG(INFO) << req.getBody();
+        nlohmann::json json;
+        req.BindJSON(json);
+
+        LOG(INFO) << json.dump();
+
         resp.JSON(200, {
                 {"status", "ok"},
         });

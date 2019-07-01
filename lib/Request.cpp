@@ -29,3 +29,7 @@ void Request::ParseGetParam() {
 const Dict<std::string, std::string> &Request::GetParams() const {
     return _get_dict;
 }
+
+void Request::BindJSON(nlohmann::json &json) {
+    json = nlohmann::json::parse(getBody());
+}
