@@ -8,7 +8,9 @@
 int main(int argc, char *argv[]) {
     auto engine = restpp::Engine::make();
 
-    engine->GET("/", [](restpp::Request &req, restpp::Response &resp) {
+    engine->StaticFile("/", "./index.html");
+
+    engine->GET("/hello", [](restpp::Request &req, restpp::Response &resp) {
         LOG(INFO) << req.getMethod();
         LOG(INFO) << req.getTarget();
         LOG(INFO) << req.getParams();

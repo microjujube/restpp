@@ -13,6 +13,7 @@
 #include <boost/noncopyable.hpp>
 
 #include <restpp/Types.hpp>
+#include <restpp/Utils.hpp>
 
 namespace restpp {
     class Response : public boost::noncopyable {
@@ -21,6 +22,30 @@ namespace restpp {
             _status = status;
             _body = j.dump();
             _size = _body.size();
+        }
+
+        void File(const std::string &filename) {
+            boost::beast::http::file_body::file_type body;
+            boost::beast::error_code ec;
+            body.open(filename.c_str(), boost::beast::file_mode::scan, ec);
+            if (ec == boost::beast::errc::no_such_file_or_directory) {
+                _status = 404;
+                _body = std::string("no such file or directory");
+                _size = _body.size();
+                content_type = "text/html";
+                return;
+            } else if (ec) {
+                _status = 500;
+                _body = std::string("server error");
+                _size = _body.size();
+                return;
+            }
+
+            _status = 200;
+            _size = body.size(ec);
+            _body.resize(_size);
+            body.write(_body.data(), _body.size(), ec);
+            content_type = std::string(mime_type(filename));
         }
 
         const std::string &getBody() const {

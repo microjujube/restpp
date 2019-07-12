@@ -29,6 +29,8 @@ namespace restpp {
 
         virtual void FILES(const path_type &path, const std::string &dir) = 0;
 
+        virtual void StaticFile(const path_type &path, const std::string &filename) = 0;
+
         static sptr make();
     };
 

@@ -19,7 +19,6 @@
 
 namespace restpp {
     // Return a reasonable mime type based on the extension of a file.
-    boost::beast::string_view mime_type(boost::beast::string_view path);
 
     class RequestHandler {
     public:
