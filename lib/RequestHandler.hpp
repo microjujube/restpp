@@ -33,7 +33,9 @@ namespace restpp {
             // Make sure we can handle the method
             if (req.method() != boost::beast::http::verb::get &&
                 req.method() != boost::beast::http::verb::head &&
-                req.method() != boost::beast::http::verb::post)
+                req.method() != boost::beast::http::verb::post &&
+                req.method() != boost::beast::http::verb::delete_ &&
+                req.method() != boost::beast::http::verb::put)
                 return send(bad_request(req.version(), req.keep_alive())("Unknown HTTP-method"));
 
             // Request path must be absolute and not contain "..".
@@ -69,15 +71,13 @@ namespace restpp {
                 return send(bad_request(req.version(), req.keep_alive())("Not Found"));
             }
 
-            auto ctx = Context::make();
+            auto ctx = Context::make(socket, close, ec);
             ctx->set_parameter(get_param);
             ctx->set_target(target);
             ctx->set_version(req.version());
             ctx->set_keep_alive(req.keep_alive());
 
             _routes[req.method()][Engine::path_type(target)](ctx);
-
-            send(std::move(ctx->response()));
         }
 
     protected:

@@ -7,6 +7,9 @@
 #include <boost/tokenizer.hpp>
 #include <boost/beast/version.hpp>
 #include <boost/beast/http.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/config.hpp>
 #include <restpp/Utils.hpp>
 
 #define tokenizer(inp, sep) \
@@ -20,13 +23,15 @@ namespace restpp {
 
     class ContextImpl : public Context {
     public:
-        ContextImpl() = default;
+        ContextImpl(boost::asio::ip::tcp::socket &socket,
+                    bool &close,
+                    boost::system::error_code &ec) : _socket(socket), _close(close), _ec(ec) {
+
+        };
 
         void JSON(int status, const json &json) override;
 
         void File(const std::string &filename) override;
-
-        boost_beast_response &response() override;
 
         void ParseGetParam() override;
 
@@ -43,63 +48,67 @@ namespace restpp {
 
         void set_body(boost::string_view &body) override;
 
+        template<class T>
+        void set_access_control(T &response) {
+            response.set(boost::beast::http::field::access_control_allow_headers, "*");
+            response.set(boost::beast::http::field::access_control_allow_origin, "*");
+            response.set(boost::beast::http::field::cache_control, "private");
+        }
+
     private:
         std::string _target;
         std::string _parameter;
         bool _keep_alive{};
         unsigned int _version{};
         Dict<std::string, std::string> _get_dict;
-        boost_beast_response _response;
+
+        boost::asio::ip::tcp::socket &_socket;
+        bool &_close;
+        boost::system::error_code &_ec;
     };
 
     void ContextImpl::JSON(int status, const json &json) {
+        send_lambda send{_socket, _close, _ec};
+        boost::beast::http::response<boost::beast::http::string_body> res{
+                boost::beast::http::status(status),
+                _version};
         //set http status
-        _response.result(boost::beast::http::status(status));
+        res.result(boost::beast::http::status(status));
         //set content type
-        _response.set(boost::beast::http::field::content_type, "application/json");
+        res.set(boost::beast::http::field::content_type, "application/json");
         //write stream for json
-        boost::beast::ostream(_response.body())
-                << json.dump();
+        res.body() = json.dump();
 
+        set_access_control(res);
+        return send(std::move(res));
     }
 
     void ContextImpl::File(const std::string &filename) {
-        boost::beast::http::file_body::file_type body;
+        send_lambda send{_socket, _close, _ec};
+        boost::beast::http::file_body::value_type body;
         boost::beast::error_code ec;
-        boost::beast::http::status status = boost::beast::http::status::ok;
         body.open(filename.c_str(), boost::beast::file_mode::scan, ec);
         if (ec == boost::beast::errc::no_such_file_or_directory) {
-            status = boost::beast::http::status::not_found;
-            boost::beast::ostream(_response.body()) << "not found";
+            send(not_found(_version, _keep_alive)(filename));
         } else if (ec) {
-            status = boost::beast::http::status::internal_server_error;
-            boost::beast::ostream(_response.body()) << "internal server error";
+            send(server_error(_version, _keep_alive)("Internal Server Error"));
         } else {
-            boost::beast::ostream(_response.body());
-            
-        }
-        //set http status as http ok
-        _response.result(status);
-        //set content type
-        _response.set(boost::beast::http::field::content_type, mime_type(filename));
+            const size_t size = body.size();
+            boost::beast::http::response<boost::beast::http::file_body> res{
+                    std::piecewise_construct,
+                    std::make_tuple(std::move(body)),
+                    std::make_tuple(boost::beast::http::status::ok, _version)};
 
+            res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
+            res.set(boost::beast::http::field::content_type, mime_type(filename));
+            res.content_length(size);
+            res.keep_alive(_keep_alive);
+            return send(std::move(res));
+        }
     }
 
     void ContextImpl::set_body(boost::string_view &body) {
 
-    }
-
-    Context::boost_beast_response &ContextImpl::response() {
-        _response.set(boost::beast::http::field::access_control_allow_headers, "*");
-        _response.set(boost::beast::http::field::access_control_allow_origin, "*");
-        _response.set(boost::beast::http::field::cache_control, "private");
-
-        _response.version(_version);
-        _response.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
-        _response.keep_alive(_keep_alive);
-
-        _response.prepare_payload();
-        return _response;
     }
 
     void ContextImpl::set_parameter(boost::string_view &param) {
@@ -136,8 +145,10 @@ namespace restpp {
         }
     }
 
-    Context::sptr Context::make() {
-        return Context::sptr(new ContextImpl());
+    Context::sptr Context::make(boost::asio::ip::tcp::socket &socket,
+                                bool &close,
+                                boost::system::error_code &ec) {
+        return Context::sptr(new ContextImpl(socket, close, ec));
     }
 
 }

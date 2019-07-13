@@ -46,9 +46,9 @@ namespace restpp {
     public:
         typedef std::shared_ptr<Context> sptr;
 
-        typedef boost::beast::http::response<boost::beast::http::dynamic_body> boost_beast_response;
-
-        static sptr make();
+        static sptr make(boost::asio::ip::tcp::socket &socket,
+                         bool &close,
+                         boost::system::error_code &ec);
 
         virtual void ParseGetParam() = 0;
 
@@ -63,8 +63,6 @@ namespace restpp {
 
     private:
         //local api
-        virtual boost_beast_response &response() = 0;
-
         virtual void set_parameter(boost::string_view &param) = 0;
 
         virtual void set_target(boost::string_view &target) = 0;
