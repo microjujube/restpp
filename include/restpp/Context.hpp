@@ -22,7 +22,7 @@ namespace restpp {
 
         virtual void ParseGetParam() = 0;
 
-        virtual Dict <std::string, std::string> &GetParams() = 0;
+        virtual Dict<std::string, std::string> &GetParams() = 0;
 
         //api for user
         virtual void JSON(int status, const json &json) = 0;
@@ -33,11 +33,15 @@ namespace restpp {
 
     private:
         //local api
-        virtual boost_beast_response response() = 0;
+        virtual boost_beast_response &response() = 0;
 
         virtual void set_parameter(boost::string_view &param) = 0;
 
         virtual void set_target(boost::string_view &target) = 0;
+
+        virtual void set_version(unsigned int version) = 0;
+
+        virtual void set_keep_alive(bool keep_alive) = 0;
     };
 }
 

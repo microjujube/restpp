@@ -106,9 +106,10 @@ namespace restpp {
             auto ctx = Context::make();
             ctx->set_parameter(get_param);
             ctx->set_target(target);
+            ctx->set_version(req.version());
+            ctx->set_keep_alive(req.keep_alive());
 
             _routes[req.method()][Engine::path_type(target)](ctx);
-
             // Respond to GET request
 //            boost::beast::http::response<boost::beast::http::string_body> res;
 //            res.version(req.version());

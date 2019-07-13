@@ -5,6 +5,8 @@
 #include "restpp/Context.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/beast/version.hpp>
+#include <boost/beast/http.hpp>
 
 #define tokenizer(inp, sep) \
     boost::tokenizer<boost::char_separator<char> > \
@@ -23,7 +25,7 @@ namespace restpp {
 
         void File(const std::string &filename) override;
 
-        boost_beast_response response() override;
+        boost_beast_response &response() override;
 
         void ParseGetParam() override;
 
@@ -34,13 +36,27 @@ namespace restpp {
 
         void set_target(boost::string_view &target) override;
 
+        void set_version(unsigned int version) override;
+
+        void set_keep_alive(bool keep_alive) override;
+
     private:
         std::string _target;
         std::string _parameter;
+        bool _keep_alive{};
+        unsigned int _version{};
         Dict<std::string, std::string> _get_dict;
+        boost_beast_response _response;
     };
 
     void ContextImpl::JSON(int status, const json &json) {
+        //set http status
+        _response.result(boost::beast::http::status(status));
+        //set content type
+        _response.set(boost::beast::http::field::content_type, "application/json");
+        //write stream for json
+        boost::beast::ostream(_response.body())
+                << json.dump();
 
     }
 
@@ -48,8 +64,17 @@ namespace restpp {
 
     }
 
-    Context::boost_beast_response ContextImpl::response() {
-        return restpp::Context::boost_beast_response();
+    Context::boost_beast_response &ContextImpl::response() {
+        _response.set(boost::beast::http::field::access_control_allow_headers, "*");
+        _response.set(boost::beast::http::field::access_control_allow_origin, "*");
+        _response.set(boost::beast::http::field::cache_control, "private");
+
+        _response.version(_version);
+        _response.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
+        _response.keep_alive(_keep_alive);
+
+        _response.prepare_payload();
+        return _response;
     }
 
     void ContextImpl::set_parameter(boost::string_view &param) {
@@ -58,6 +83,14 @@ namespace restpp {
 
     void ContextImpl::set_target(boost::string_view &target) {
         _target = std::string(target);
+    }
+
+    void ContextImpl::set_version(unsigned int version) {
+        _version = version;
+    }
+
+    void ContextImpl::set_keep_alive(bool keep_alive) {
+        _keep_alive = keep_alive;
     }
 
     Dict<std::string, std::string> &ContextImpl::GetParams() {
