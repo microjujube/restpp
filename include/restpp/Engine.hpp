@@ -9,7 +9,6 @@
 #include <functional>
 #include <thread>
 
-#include "restpp/Response.hpp"
 #include "restpp/Context.hpp"
 
 namespace restpp {

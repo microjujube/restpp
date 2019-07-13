@@ -1,5 +1,5 @@
 add_library(restpp SHARED restpp.cc
-        Engine.cpp Response.cpp RequestHandler.cpp Utils.cpp Context.cpp
+        Engine.cpp RequestHandler.cpp Utils.cpp Context.cpp
         )
 target_link_libraries(restpp PRIVATE
         glog::glog
