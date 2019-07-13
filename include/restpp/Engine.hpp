@@ -9,8 +9,8 @@
 #include <functional>
 #include <thread>
 
-#include "restpp/Request.hpp"
 #include "restpp/Response.hpp"
+#include "restpp/Context.hpp"
 
 namespace restpp {
     class Engine {
@@ -19,7 +19,7 @@ namespace restpp {
 
         typedef std::string path_type;
 
-        typedef std::function<void(Request &req, Response &resp)> Handler;
+        typedef std::function<void(Context::sptr &ctx)> Handler;
 
         virtual void Run(const std::string &args) = 0;
 

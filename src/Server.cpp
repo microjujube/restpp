@@ -10,30 +10,14 @@ int main(int argc, char *argv[]) {
 
     engine->StaticFile("/", "./index.html");
 
-    engine->GET("/hello", [](restpp::Request &req, restpp::Response &resp) {
-        LOG(INFO) << req.getMethod();
-        LOG(INFO) << req.getTarget();
-        LOG(INFO) << req.getParams();
-        LOG(INFO) << req.getBody();
-
-        //parse get parameters
-        req.ParseGetParam();
-        for (auto const &key:req.GetParams().keys()) {
-            LOG(INFO) << key << "=" << req.GetParams()[key];
+    engine->GET("/hello", [](restpp::Context::sptr &ctx) {
+        ctx->ParseGetParam();
+        auto dict = ctx->GetParams();
+        for (auto &key : dict.keys()) {
+            LOG(INFO) << key << " = " << dict[key];
         }
 
-        resp.JSON(200, {
-                {"status", "ok"},
-        });
-    });
-
-    engine->POST("/", [](restpp::Request &req, restpp::Response &resp) {
-        restpp::json json;
-        req.BindJSON(json);
-
-        LOG(INFO) << json.dump();
-
-        resp.JSON(200, {
+        ctx->JSON(200, {
                 {"status", "ok"},
         });
     });

@@ -42,17 +42,14 @@ public:
     }
 
     void StaticFile(const path_type &path, const std::string &filename) override {
-        auto handler = [=](Request &req, Response &resp) {
-            resp.File(filename);
+        auto handler = [=](Context::sptr &ctx) {
+            ctx->File(filename);
         };
 
         _routes[boost::beast::http::verb::get][path] = handler;
     }
 
 private:
-    void HandlerFile(const Request &req, Response &resp) {
-
-    }
 };
 
 

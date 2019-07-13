@@ -20,7 +20,7 @@ SET(BOOST_REQUIRED_COMPONENTS
         timer
         chrono
         thread
-        unit_test_framework
+#        unit_test_framework
         )
 
 find_package(Boost COMPONENTS ${BOOST_REQUIRED_COMPONENTS} REQUIRED)
