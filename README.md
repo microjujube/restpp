@@ -32,7 +32,17 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-
+### Serve POST request and bind json
+```cpp
+ engine->POST("/hello", [](restpp::Context::sptr &ctx) {
+        restpp::json json;
+        ctx->ShouldBindJSON(json);
+        LOG(INFO) << json.dump();
+        ctx->JSON(200, {
+                {"status", "ok"},
+        });
+    });
+```
 ### Serve A static File
 ```cpp 
 #include <restpp/Logger.hpp>

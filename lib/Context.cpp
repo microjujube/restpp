@@ -29,6 +29,8 @@ namespace restpp {
 
         };
 
+        void ShouldBindJSON(json &json) override;
+
         void JSON(int status, const json &json) override;
 
         void File(const std::string &filename) override;
@@ -38,15 +40,15 @@ namespace restpp {
         Dict<std::string, std::string> &GetParams() override;
 
     private:
-        void set_parameter(boost::string_view &param) override;
+        void set_parameter(boost::string_view param) override;
 
-        void set_target(boost::string_view &target) override;
+        void set_target(boost::string_view target) override;
 
         void set_version(unsigned int version) override;
 
         void set_keep_alive(bool keep_alive) override;
 
-        void set_body(boost::string_view &body) override;
+        void set_body(boost::string_view body) override;
 
         template<class T>
         void set_access_control(T &response) {
@@ -57,6 +59,7 @@ namespace restpp {
 
     private:
         std::string _target;
+        std::string _body;
         std::string _parameter;
         bool _keep_alive{};
         unsigned int _version{};
@@ -107,16 +110,16 @@ namespace restpp {
         }
     }
 
-    void ContextImpl::set_body(boost::string_view &body) {
-
+    void ContextImpl::set_body(boost::string_view body) {
+        _body = body.to_string();
     }
 
-    void ContextImpl::set_parameter(boost::string_view &param) {
-        _parameter = std::string(param);
+    void ContextImpl::set_parameter(boost::string_view param) {
+        _parameter = param.to_string();
     }
 
-    void ContextImpl::set_target(boost::string_view &target) {
-        _target = std::string(target);
+    void ContextImpl::set_target(boost::string_view target) {
+        _target = target.to_string();
     }
 
     void ContextImpl::set_version(unsigned int version) {
@@ -143,6 +146,10 @@ namespace restpp {
                 _get_dict.set(boost::algorithm::trim_copy(toks[0]), boost::algorithm::trim_copy(toks[1]));
             } else continue; //otherwise error
         }
+    }
+
+    void ContextImpl::ShouldBindJSON(json &j) {
+        j = json::parse(_body);
     }
 
     Context::sptr Context::make(boost::asio::ip::tcp::socket &socket,

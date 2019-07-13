@@ -54,7 +54,10 @@ namespace restpp {
 
         virtual Dict<std::string, std::string> &GetParams() = 0;
 
+        //for requests
+        virtual void ShouldBindJSON(json &j) = 0;
         //api for user
+        //response
         virtual void JSON(int status, const json &json) = 0;
 
         virtual void File(const std::string &filename) = 0;
@@ -63,15 +66,15 @@ namespace restpp {
 
     private:
         //local api
-        virtual void set_parameter(boost::string_view &param) = 0;
+        virtual void set_parameter(boost::string_view param) = 0;
 
-        virtual void set_target(boost::string_view &target) = 0;
+        virtual void set_target(boost::string_view target) = 0;
 
         virtual void set_version(unsigned int version) = 0;
 
         virtual void set_keep_alive(bool keep_alive) = 0;
 
-        virtual void set_body(boost::string_view &body) = 0;
+        virtual void set_body(boost::string_view body) = 0;
     };
 }
 

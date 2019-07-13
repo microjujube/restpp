@@ -22,6 +22,15 @@ int main(int argc, char *argv[]) {
         });
     });
 
+    engine->POST("/hello", [](restpp::Context::sptr &ctx) {
+        restpp::json json;
+        ctx->ShouldBindJSON(json);
+        LOG(INFO) << json.dump();
+        ctx->JSON(200, {
+                {"status", "ok"},
+        });
+    });
+
     engine->Run("0.0.0.0:8080");
     return 0;
 }

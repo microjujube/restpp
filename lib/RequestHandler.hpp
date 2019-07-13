@@ -76,6 +76,7 @@ namespace restpp {
             ctx->set_target(target);
             ctx->set_version(req.version());
             ctx->set_keep_alive(req.keep_alive());
+            ctx->set_body(req.body());
 
             _routes[req.method()][Engine::path_type(target)](ctx);
         }
