@@ -98,36 +98,6 @@ void EngineSync::Run(const std::string &args) {
     }
 }
 
-// This is the C++11 equivalent of a generic lambda.
-// The function object is used to send an HTTP message.
-template<class Stream>
-struct send_lambda {
-    Stream &stream_;
-    bool &close_;
-    boost::system::error_code &ec_;
-
-    explicit
-    send_lambda(
-            Stream &stream,
-            bool &close,
-            boost::system::error_code &ec)
-            : stream_(stream), close_(close), ec_(ec) {
-    }
-
-    template<bool isRequest, class Body, class Fields>
-    void
-    operator()(boost::beast::http::message<isRequest, Body, Fields> &&msg) const {
-        // Determine if we should close the connection after
-        close_ = msg.need_eof();
-
-        // We need the serializer here because the serializer requires
-        // a non-const file_body, and the message oriented version of
-        // http::write only works with const messages.
-        boost::beast::http::serializer<isRequest, Body, Fields> sr{msg};
-        boost::beast::http::write(stream_, sr, ec_);
-    }
-};
-
 
 // Report a failure
 void
@@ -142,9 +112,6 @@ void EngineSync::do_session(boost::asio::ip::tcp::socket &socket) {
     // This buffer is required to persist across reads
     boost::beast::flat_buffer buffer;
 
-    // This lambda is used to send messages
-    send_lambda<boost::asio::ip::tcp::socket> lambda{socket, close, ec};
-
     for (;;) {
         // Read a request
         boost::beast::http::request<boost::beast::http::string_body> req;
@@ -155,7 +122,7 @@ void EngineSync::do_session(boost::asio::ip::tcp::socket &socket) {
             return fail(ec, "read");
 
         // Send the response
-        handle_request(std::move(req), lambda);
+        handle_request(std::move(req), socket, close, ec);
         if (ec)
             return fail(ec, "write");
         if (close) {

@@ -25,9 +25,10 @@ namespace restpp {
     public:
         std::shared_ptr<RequestHandler> sptr;
 
-        template<class Body, class Allocator, class Send>
-        void handle_request(boost::beast::http::request<Body, boost::beast::http::basic_fields<Allocator>> &&req,
-                            Send &&send) {
+        void handle_request(boost::beast::http::request<boost::beast::http::string_body> &&req,
+                            boost::asio::ip::tcp::socket &socket,
+                            bool &close,
+                            boost::system::error_code &ec) {
             // Returns a bad request response
             auto const bad_request =
                     [&req](boost::beast::string_view why) {
@@ -68,6 +69,7 @@ namespace restpp {
                         return res;
                     };
 
+            send_lambda<boost::asio::ip::tcp::socket> send{socket, close, ec};
             // Make sure we can handle the method
             if (req.method() != boost::beast::http::verb::get &&
                 req.method() != boost::beast::http::verb::head &&
@@ -111,7 +113,7 @@ namespace restpp {
 
             _routes[req.method()][Engine::path_type(target)](ctx);
 
-            return send(std::move(ctx->response()));
+            send(std::move(ctx->response()));
         }
 
     protected:
