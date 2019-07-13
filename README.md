@@ -6,34 +6,28 @@ restful web api framework
 
 ### Parse GET parameters
 ```cpp 
+#include <restpp/Logger.hpp>
+#include <restpp/Engine.hpp>
+#include <string>
+
+int main(int argc, char *argv[]) {
     auto engine = restpp::Engine::make();
 
-    // /?key=value&a=b&c=d
-    engine->GET("/", [](restpp::Request &req, restpp::Response &resp) {
-        //parse get parameters
-        req.ParseGetParam();
-        for (auto const &key:req.GetParams().keys()) {
-            LOG(INFO) << key << "=" << req.GetParams()[key];
+    engine->StaticFile("/", "./index.html");
+
+    engine->GET("/hello", [](restpp::Context::sptr &ctx) {
+        ctx->ParseGetParam();
+        auto dict = ctx->GetParams();
+        for (auto &key : dict.keys()) {
+            LOG(INFO) << key << " = " << dict[key];
         }
 
-        resp.JSON(200, {
+        ctx->JSON(200, {
                 {"status", "ok"},
         });
     });
 
     engine->Run("0.0.0.0:8080");
-```
-
-### Parse POST body
-```cpp
-    engine->POST("/", [](restpp::Request &req, restpp::Response &resp) {
-        //parse json body
-        restpp::json json;
-        req.BindJSON(json);
-        LOG(INFO) << json.dump();
-        
-        resp.JSON(200, {
-            {"status", "ok"},
-        });
-    });
+    return 0;
+}
 ```
