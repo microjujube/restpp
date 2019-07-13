@@ -42,6 +42,8 @@ namespace restpp {
         virtual void set_version(unsigned int version) = 0;
 
         virtual void set_keep_alive(bool keep_alive) = 0;
+
+        virtual void set_body(boost::string_view &body) = 0;
     };
 }
 

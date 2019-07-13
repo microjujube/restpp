@@ -110,21 +110,6 @@ namespace restpp {
             ctx->set_keep_alive(req.keep_alive());
 
             _routes[req.method()][Engine::path_type(target)](ctx);
-            // Respond to GET request
-//            boost::beast::http::response<boost::beast::http::string_body> res;
-//            res.version(req.version());
-//            res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
-//            res.keep_alive(req.keep_alive());
-//
-//            res.body() = response.getBody();
-//            res.content_length(response.getSize());
-//            res.set(boost::beast::http::field::content_type, response.getContentType());
-//            res.result(boost::beast::http::status(response.getStatus()));
-//            res.set(boost::beast::http::field::access_control_allow_headers, "*");
-//            res.set(boost::beast::http::field::access_control_allow_origin, "*");
-//            res.set(boost::beast::http::field::cache_control, "private");
-//
-//            res.prepare_payload();
 
             return send(std::move(ctx->response()));
         }

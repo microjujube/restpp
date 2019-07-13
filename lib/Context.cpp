@@ -7,6 +7,7 @@
 #include <boost/tokenizer.hpp>
 #include <boost/beast/version.hpp>
 #include <boost/beast/http.hpp>
+#include <restpp/Utils.hpp>
 
 #define tokenizer(inp, sep) \
     boost::tokenizer<boost::char_separator<char> > \
@@ -40,6 +41,8 @@ namespace restpp {
 
         void set_keep_alive(bool keep_alive) override;
 
+        void set_body(boost::string_view &body) override;
+
     private:
         std::string _target;
         std::string _parameter;
@@ -61,6 +64,28 @@ namespace restpp {
     }
 
     void ContextImpl::File(const std::string &filename) {
+        boost::beast::http::file_body::file_type body;
+        boost::beast::error_code ec;
+        boost::beast::http::status status = boost::beast::http::status::ok;
+        body.open(filename.c_str(), boost::beast::file_mode::scan, ec);
+        if (ec == boost::beast::errc::no_such_file_or_directory) {
+            status = boost::beast::http::status::not_found;
+            boost::beast::ostream(_response.body()) << "not found";
+        } else if (ec) {
+            status = boost::beast::http::status::internal_server_error;
+            boost::beast::ostream(_response.body()) << "internal server error";
+        } else {
+            boost::beast::ostream(_response.body());
+            
+        }
+        //set http status as http ok
+        _response.result(status);
+        //set content type
+        _response.set(boost::beast::http::field::content_type, mime_type(filename));
+
+    }
+
+    void ContextImpl::set_body(boost::string_view &body) {
 
     }
 
