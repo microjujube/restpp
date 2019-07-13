@@ -29,58 +29,18 @@ namespace restpp {
                             boost::asio::ip::tcp::socket &socket,
                             bool &close,
                             boost::system::error_code &ec) {
-            // Returns a bad request response
-            auto const bad_request =
-                    [&req](boost::beast::string_view why) {
-                        boost::beast::http::response<boost::beast::http::string_body> res{
-                                boost::beast::http::status::bad_request, req.version()};
-                        res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
-                        res.set(boost::beast::http::field::content_type, "text/html");
-                        res.keep_alive(req.keep_alive());
-                        res.body() = why.to_string();
-                        res.prepare_payload();
-                        return res;
-                    };
-
-            // Returns a not found response
-            auto const not_found =
-                    [&req](boost::beast::string_view target) {
-                        boost::beast::http::response<boost::beast::http::string_body> res{
-                                boost::beast::http::status::not_found,
-                                req.version()};
-                        res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
-                        res.set(boost::beast::http::field::content_type, "text/html");
-                        res.keep_alive(req.keep_alive());
-                        res.body() = "The resource '" + target.to_string() + "' was not found.";
-                        res.prepare_payload();
-                        return res;
-                    };
-
-            // Returns a server error response
-            auto const server_error =
-                    [&req](boost::beast::string_view what) {
-                        boost::beast::http::response<boost::beast::http::string_body> res{
-                                boost::beast::http::status::internal_server_error, req.version()};
-                        res.set(boost::beast::http::field::server, BOOST_BEAST_VERSION_STRING);
-                        res.set(boost::beast::http::field::content_type, "text/html");
-                        res.keep_alive(req.keep_alive());
-                        res.body() = "An error occurred: '" + what.to_string() + "'";
-                        res.prepare_payload();
-                        return res;
-                    };
-
             send_lambda<boost::asio::ip::tcp::socket> send{socket, close, ec};
             // Make sure we can handle the method
             if (req.method() != boost::beast::http::verb::get &&
                 req.method() != boost::beast::http::verb::head &&
                 req.method() != boost::beast::http::verb::post)
-                return send(bad_request("Unknown HTTP-method"));
+                return send(bad_request(req.version(), req.keep_alive())("Unknown HTTP-method"));
 
             // Request path must be absolute and not contain "..".
             if (req.target().empty() ||
                 req.target()[0] != '/' ||
                 req.target().find("..") != boost::beast::string_view::npos)
-                return send(bad_request("Illegal request-target"));
+                return send(bad_request(req.version(), req.keep_alive())("Illegal request-target"));
 
             // Build the path to the requested file
             // std::string path = path_cat(doc_root, req.target());
@@ -88,7 +48,7 @@ namespace restpp {
             // path.append("index.html");
 
             if (!_routes.count(req.method())) {
-                return send(bad_request("Unknown HTTP-method"));
+                return send(bad_request(req.version(), req.keep_alive())("Unknown HTTP-method"));
             }
 
             //get params
@@ -101,8 +61,12 @@ namespace restpp {
 
             DLOG(INFO) << req.method() << " " << target << " " << get_param;
 
+            if (!_routes.count(req.method())) {
+                return send(bad_request(req.version(), req.keep_alive())("Not Found"));
+            }
+
             if (!_routes[req.method()].count(Engine::path_type(target))) {
-                return send(bad_request("Not Found"));
+                return send(bad_request(req.version(), req.keep_alive())("Not Found"));
             }
 
             auto ctx = Context::make();
