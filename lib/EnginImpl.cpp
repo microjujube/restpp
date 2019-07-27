@@ -3,3 +3,10 @@
 //
 
 #include "EnginImpl.hpp"
+
+using namespace restpp;
+// Report a failure
+void
+fail(boost::system::error_code ec, char const *what) {
+    std::cerr << what << ": " << ec.message() << "\n";
+}

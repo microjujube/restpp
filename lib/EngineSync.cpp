@@ -44,12 +44,6 @@ void EngineSync::Run(const std::string &args) {
 }
 
 
-// Report a failure
-void
-fail(boost::system::error_code ec, char const *what) {
-    std::cerr << what << ": " << ec.message() << "\n";
-}
-
 void EngineSync::do_session(boost::asio::ip::tcp::socket &socket) {
     bool close = false;
     boost::system::error_code ec;

@@ -21,6 +21,7 @@
 #include "restpp/Engine.hpp"
 #include "restpp/Exception.hpp"
 #include "EngineSync.hpp"
+#include "EngineAsync.hpp"
 #include "RequestHandler.hpp"
 
 using namespace restpp;

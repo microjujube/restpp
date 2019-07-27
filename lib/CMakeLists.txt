@@ -7,6 +7,7 @@ add_library(restpp SHARED restpp.cc
         Engine.cpp
         EnginImpl.cpp
         EngineSync.cpp
+        EngineAsync.cpp
         )
 target_link_libraries(restpp PRIVATE
         glog::glog

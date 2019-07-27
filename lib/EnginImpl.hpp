@@ -26,9 +26,11 @@
 #include "restpp/Exception.hpp"
 #include "RequestHandler.hpp"
 
+// Report a failure
+void
+fail(boost::system::error_code ec, char const *what);
 
 namespace restpp{
-
     class EngineImpl : public Engine, public RequestHandler {
     public:
         void GET(const path_type &path, Handler handler) override {
