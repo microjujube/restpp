@@ -10,6 +10,7 @@ int main(int argc, char *argv[]) {
         auto engine = restpp::Engine::make();
 
         engine->StaticFile("/", "index.html");
+        engine->StaticFile("/favicon.ico","favicon.ico");
         engine->Static("/static", "static");
 
         engine->GET("/hello", [](restpp::Context::sptr &ctx) {

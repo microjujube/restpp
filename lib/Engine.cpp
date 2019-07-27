@@ -56,7 +56,7 @@ public:
         auto handler = [=](Context::sptr &ctx) {
             ctx->File(filename);
         };
-
+        LOG(INFO) << "Register GET [" << path << "] to " << filename;
         _routes[boost::beast::http::verb::get][path] = handler;
     }
 
