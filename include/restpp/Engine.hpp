@@ -9,10 +9,11 @@
 #include <functional>
 #include <thread>
 
+#include "restpp/Config.h"
 #include "restpp/Context.hpp"
 
 namespace restpp {
-    class Engine {
+    class RESTPP_API Engine {
     public:
         typedef std::shared_ptr<Engine> sptr;
 
