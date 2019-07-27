@@ -15,6 +15,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/config.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/filesystem.hpp>
 
 #include "restpp/Logger.hpp"
 #include "restpp/Engine.hpp"
@@ -37,7 +38,18 @@ public:
     }
 
     void Static(const path_type &path, const std::string &dir) override {
-
+        boost::filesystem::path p = boost::filesystem::current_path() / dir;
+        boost::filesystem::directory_iterator it{p};
+        while (it != boost::filesystem::directory_iterator{}) {
+            auto file = it->path();
+            std::string get_path = path + "/" + file.filename().string();
+            auto handler = [=](Context::sptr &ctx) {
+                ctx->File(file.string());
+            };
+            _routes[boost::beast::http::verb::get][get_path] = handler;
+            LOG(INFO) << "Register GET [" << get_path << "] to " << file.string();
+            it++;
+        }
     }
 
     void StaticFile(const path_type &path, const std::string &filename) override {

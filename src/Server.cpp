@@ -9,6 +9,7 @@ int main(int argc, char *argv[]) {
     auto engine = restpp::Engine::make();
 
     engine->StaticFile("/", "index.html");
+    engine->Static("/static","static");
 
     engine->GET("/hello", [](restpp::Context::sptr &ctx) {
         ctx->ParseGetParam();
