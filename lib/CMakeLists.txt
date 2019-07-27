@@ -1,7 +1,12 @@
 add_definitions(-DRESTPP_DLL_EXPORTS)
 
 add_library(restpp SHARED restpp.cc
-        Engine.cpp RequestHandler.cpp Utils.cpp Context.cpp
+        RequestHandler.cpp
+        Utils.cpp
+        Context.cpp
+        Engine.cpp
+        EnginImpl.cpp
+        EngineSync.cpp
         )
 target_link_libraries(restpp PRIVATE
         glog::glog
