@@ -1,7 +1,7 @@
 # restpp
 Restful Web API Framework
 
-![restpp](https://raw.githubusercontent.com/microjujube/restpp/master/resources/restpp.png)
+![restpp](https://github.com/microjujube/restpp/raw/master/resources/restpp.png)
 
 # example
 
