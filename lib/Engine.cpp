@@ -36,8 +36,7 @@ public:
         _routes[boost::beast::http::verb::post][path] = handler;
     }
 
-
-    void FILES(const path_type &path, const std::string &dir) override {
+    void Static(const path_type &path, const std::string &dir) override {
 
     }
 
