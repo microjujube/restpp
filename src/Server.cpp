@@ -6,32 +6,37 @@
 #include <string>
 
 int main(int argc, char *argv[]) {
-    auto engine = restpp::Engine::make();
+    try {
+        auto engine = restpp::Engine::make();
 
-    engine->StaticFile("/", "index.html");
-    engine->Static("/static","static");
+        engine->StaticFile("/", "index.html");
+        engine->Static("/static", "D:\\projects\\restpp\\cmake-build-debug\\static");
 
-    engine->GET("/hello", [](restpp::Context::sptr &ctx) {
-        ctx->ParseGetParam();
-        auto dict = ctx->GetParams();
-        for (auto &key : dict.keys()) {
-            LOG(INFO) << key << " = " << dict[key];
-        }
+        engine->GET("/hello", [](restpp::Context::sptr &ctx) {
+            ctx->ParseGetParam();
+            auto dict = ctx->GetParams();
+            for (auto &key : dict.keys()) {
+                LOG(INFO) << key << " = " << dict[key];
+            }
 
-        ctx->JSON(200, {
-                {"status", "ok"},
+            ctx->JSON(200, {
+                    {"status", "ok"},
+            });
         });
-    });
 
-    engine->POST("/hello", [](restpp::Context::sptr &ctx) {
-        restpp::json json;
-        ctx->ShouldBindJSON(json);
-        LOG(INFO) << json.dump();
-        ctx->JSON(200, {
-                {"status", "ok"},
+        engine->POST("/hello", [](restpp::Context::sptr &ctx) {
+            restpp::json json;
+            ctx->ShouldBindJSON(json);
+            LOG(INFO) << json.dump();
+            ctx->JSON(200, {
+                    {"status", "ok"},
+            });
         });
-    });
 
-    engine->Run("0.0.0.0:8080");
+        engine->Run("0.0.0.0:8080");
+    } catch (std::exception &e) {
+        LOG(ERROR) << e.what();
+    }
+
     return 0;
 }

@@ -38,7 +38,7 @@ public:
     }
 
     void Static(const path_type &path, const std::string &dir) override {
-        boost::filesystem::path p = boost::filesystem::current_path() / dir;
+        boost::filesystem::path p = dir;
         boost::filesystem::directory_iterator it{p};
         while (it != boost::filesystem::directory_iterator{}) {
             auto file = it->path();
