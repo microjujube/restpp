@@ -1,9 +1,29 @@
-# restpp
+# RESTPP
 Restful Web API Framework
 
 ![restpp](https://github.com/microjujube/restpp/raw/master/resources/restpp.png)
 
-# example
+# Usage
+##### Build RESTPP
+```shell
+$ git clone https://github.com/microjujube/restpp.git
+$ cd restpp
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make -j4 
+$ sudo make install
+```
+
+##### How to use
+If you use CMake, just
+```cmake
+find_package(restpp CONFIG REQUIRED)
+add_executable(main main.cpp)
+target_link_libraries(main restpp::restpp)
+```
+
+# Example
 
 ### Parse GET parameters
 ```cpp 
