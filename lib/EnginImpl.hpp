@@ -48,6 +48,12 @@ namespace restpp{
             boost::filesystem::directory_iterator it{p};
             while (it != boost::filesystem::directory_iterator{}) {
                 auto file = it->path();
+				if (boost::filesystem::is_directory(file)) {
+					this->Static(path + "/" + file.filename().string(), file.string());
+					it++;
+					continue;
+				}
+
                 std::string get_path = path + "/" + file.filename().string();
                 auto handler = [=](Context::sptr &ctx) {
                     ctx->File(file.string());
